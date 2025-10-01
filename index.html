@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Comparison</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-database"></i>
+                    <div class="logo-text">
+                        <h1>Database Comparison</h1>
+                        <p>Compare and sync database structures</p>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" id="newComparisonBtn">
+                    <i class="fas fa-play"></i>
+                    New Comparison
+                </button>
+                <button class="btn btn-secondary" id="exportReportBtn" style="display: none;">
+                    <i class="fas fa-download"></i>
+                    Export Report
+                </button>
+            </div>
+        </header>
+
+        <!-- Status Message -->
+        <div class="status-message" id="statusMessage" style="display: none;">
+            <i class="fas fa-check-circle"></i>
+            <span id="statusText"></span>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-state-content">
+                <div class="empty-state-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h2>Welcome to Database Comparison Tool</h2>
+                <p>Compare and synchronize database structures between two MySQL databases with ease.</p>
+                
+                <div class="empty-state-features">
+                    <div class="feature-item">
+                        <i class="fas fa-search"></i>
+                        <span>Identify missing tables and columns</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-code"></i>
+                        <span>Detect data type mismatches</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bolt"></i>
+                        <span>Find missing database objects</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-copy"></i>
+                        <span>Generate SQL queries to fix issues</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary btn-large" id="startComparisonBtn">
+                    <i class="fas fa-rocket"></i>
+                    Start Your First Comparison
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card total-issues">
+                    <div class="card-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value" id="totalIssues">0</div>
+                        <div class="card-label">Total Issues</div>
+                    </div>
+                </div>
+                <div class="summary-card missing-tables">
+                    <div class="card-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value" id="missingTables">0</div>
+                        <div class="card-label">Missing Tables</div>
+                    </div>
+                </div>
+                <div class="summary-card column-issues">
+                    <div class="card-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value" id="columnIssues">0</div>
+                        <div class="card-label">Column Issues</div>
+                    </div>
+                </div>
+                <div class="summary-card db-objects">
+                    <div class="card-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-value" id="dbObjects">0</div>
+                        <div class="card-label">DB Objects</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button class="tab-btn active" data-tab="tables">
+                    <i class="fas fa-database"></i>
+                    Tables
+                </button>
+                <button class="tab-btn" data-tab="columns">
+                    <i class="fas fa-cog"></i>
+                    Columns
+                </button>
+                <button class="tab-btn" data-tab="structure">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Structure
+                </button>
+                <button class="tab-btn" data-tab="types">
+                    <i class="fas fa-code"></i>
+                    Types
+                </button>
+                <button class="tab-btn" data-tab="objects">
+                    <i class="fas fa-bolt"></i>
+                    Objects
+                </button>
+                <button class="tab-btn" data-tab="indexes">
+                    <i class="fas fa-key"></i>
+                    Indexes
+                </button>
+                <button class="tab-btn" data-tab="foreign-keys">
+                    <i class="fas fa-link"></i>
+                    Foreign Keys
+                </button>
+                <button class="tab-btn" data-tab="views">
+                    <i class="fas fa-eye"></i>
+                    Views
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Tables Tab -->
+                <div class="tab-pane active" id="tables-tab">
+                    <div class="section-header">
+                        <h3><i class="fas fa-database"></i> Missing Tables</h3>
+                        <span class="badge" id="missingTablesBadge">0 issues</span>
+                    </div>
+                    
+                    <div class="issue-section">
+                        <h4><i class="fas fa-circle text-danger"></i> Tables Missing in Database 1</h4>
+                        <span class="badge" id="db1MissingTablesBadge">0</span>
+                        <div class="issue-cards" id="db1MissingTablesCards"></div>
+                    </div>
+                    
+                    <div class="issue-section">
+                        <h4><i class="fas fa-circle text-primary"></i> Tables Missing in Database 2</h4>
+                        <span class="badge" id="db2MissingTablesBadge">0</span>
+                        <div class="issue-cards" id="db2MissingTablesCards"></div>
+                    </div>
+                </div>
+
+                <!-- Columns Tab -->
+                <div class="tab-pane" id="columns-tab">
+                    <div class="section-header">
+                        <h3><i class="fas fa-cog"></i> Column Issues</h3>
+                        <span class="badge" id="columnIssuesBadge">0 issues</span>
+                    </div>
+                    <div class="issue-cards" id="columnIssuesCards"></div>
+                </div>
+
+                <!-- Structure Tab -->
+                <div class="tab-pane" id="structure-tab">
+                    <div class="section-header">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Structure Mismatches</h3>
+                        <span class="badge" id="structureIssuesBadge">0 issues</span>
+                    </div>
+                    <div class="issue-cards" id="structureIssuesCards"></div>
+                </div>
+
+                <!-- Types Tab -->
+                <div class="tab-pane" id="types-tab">
+                    <div class="section-header">
+                        <h3><i class="fas fa-code"></i> Data Type Issues</h3>
+                        <span class="badge" id="typeIssuesBadge">0 issues</span>
+                    </div>
+                    <div class="issue-cards" id="typeIssuesCards"></div>
+                </div>
+
+                <!-- Objects Tab -->
+                <div class="tab-pane" id="objects-tab">
+                    <div class="section-header">
+                        <h3><i class="fas fa-bolt"></i> Database Objects</h3>
+                        <span class="badge" id="objectIssuesBadge">0 issues</span>
+                    </div>
+                    <div class="issue-cards" id="objectIssuesCards"></div>
+                </div>
+
+                <!-- Indexes Tab -->
+                <div class="tab-pane" id="indexes-tab">
+                    <div class="section-header">
+                        <h3><i class="fas fa-key"></i> Index Issues</h3>
+                        <span class="badge" id="indexIssuesBadge">0 issues</span>
+                    </div>
+                    <div class="issue-cards" id="indexIssuesCards"></div>
+                </div>
+
+                <!-- Foreign Keys Tab -->
+                <div class="tab-pane" id="foreign-keys-tab">
+                    <div class="section-header">
+                        <h3><i class="fas fa-link"></i> Foreign Key Issues</h3>
+                        <span class="badge" id="foreignKeyIssuesBadge">0 issues</span>
+                    </div>
+                    <div class="issue-cards" id="foreignKeyIssuesCards"></div>
+                </div>
+
+                <!-- Views Tab -->
+                <div class="tab-pane" id="views-tab">
+                    <div class="section-header">
+                        <h3><i class="fas fa-eye"></i> View Issues</h3>
+                        <span class="badge" id="viewIssuesBadge">0 issues</span>
+                    </div>
+                    <div class="issue-cards" id="viewIssuesCards"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Popup Form -->
+        <div class="popup-overlay" id="popupOverlay">
+            <div class="popup-form">
+                <div class="popup-header">
+                    <h2>Database Connection Details</h2>
+                    <button class="popup-close" id="popupClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="popup-content">
+                    <div class="form-grid">
+                        <div class="form-section">
+                            <h3>Database 1</h3>
+                            <div class="form-group">
+                                <label for="db1_host">Host</label>
+                                <input type="text" id="db1_host" placeholder="localhost" value="localhost">
+                            </div>
+                            <div class="form-group">
+                                <label for="db1_username">Username</label>
+                                <input type="text" id="db1_username" placeholder="root" value="root">
+                            </div>
+                            <div class="form-group">
+                                <label for="db1_password">Password</label>
+                                <input type="password" id="db1_password" placeholder="root" value="root">
+                            </div>
+                            <div class="form-group">
+                                <label for="db1_database">Database</label>
+                                <input type="text" id="db1_database" placeholder="database_name_1" value="database_name_1">
+                            </div>
+                        </div>
+                        <div class="form-section">
+                            <h3>Database 2</h3>
+                            <div class="form-group">
+                                <label for="db2_host">Host</label>
+                                <input type="text" id="db2_host" placeholder="localhost" value="localhost">
+                            </div>
+                            <div class="form-group">
+                                <label for="db2_username">Username</label>
+                                <input type="text" id="db2_username" placeholder="root" value="root">
+                            </div>
+                            <div class="form-group">
+                                <label for="db2_password">Password</label>
+                                <input type="password" id="db2_password" placeholder="root" value="root">
+                            </div>
+                            <div class="form-group">
+                                <label for="db2_database">Database</label>
+                                <input type="text" id="db2_database" placeholder="database_name_2" value="database_name_2">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                        <button class="btn btn-primary" id="compareBtn">
+                            <i class="fas fa-search"></i>
+                            Compare Databases
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>Comparing databases...</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; Created by Mahir Patel 2025 </a></p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
